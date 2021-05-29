@@ -1,6 +1,7 @@
 package main
 
-/* inflection morphology on turkish words. specifically, function to perform agglutination
+/*
+Inflectional morphology of turkish words. Specifically, functions to perform agglutination
 (root + suffix + suffix ...) while respecting phonotactics (vowel harmony, consonant mutation) and exceptions.
 */
 
@@ -13,7 +14,9 @@ iff the stem's final character is a consonant.
 The only character that appears as an optional tail is 'n', which appears in the roots bu, şu, o
 (bu + i -> bunu, o + a -> ona, etc.) and the 3rd person possessive suffix -(s)I(n-) (as well as its plural form
 -lar + -(s)I(n-) -> -larI(n-)). Therefore, the optional tail, when part of the stem, is represented by:
-N = 'n' or nothing
+ - N = 'n' or nothing
+N is realized as 'n' if and only if a suffix is added after it. (The actual rules are more complex and not fully
+implemented, this is a simplifying assumption.)
 
 The addition of a suffix can never cause consecutive vowels (and generally does not cause consecutive consonants
 in the same syllable, an exception is -t: yaptır + -t -> yaptırt) so if the stem ends in a vowel, there is no
@@ -23,7 +26,7 @@ of this is the -iyor suffix: for -iyor: başla + iyor -> başlıyor
 For the stem and the suffix head and body, the characters used for encoding are:
 - lowercase characters are not subject to vowel harmony or consonant mutation and match themselves exactly.
 - uppercase characters are subject to both and the encodings are:
-  B = b/p, C = c,ç, D = d,t K = k/g/ğ	A = a/e (low), I = ı/i/u/ü
+  B = b/p, C = c,ç, D = d,t K = k/g/ğ	A = a/e (low), I = ı/i/u/ü (high)
   K becomes a ğ when a vowel follows it except when preceded by a consonant in which case it becomes g
   consonant voicing generally happens in multisyllabic stems but there are exceptions (git, gidiyorum) which are
   encoded in the root; "git" would be encoded as "giD"
@@ -32,7 +35,23 @@ a vowel and is removed otherwise.
 
 as an example, the suffix -iyor would be written as "Iyor" and the root 'bu' is represented as the stem 'buN'
 
-brainfuck, s-expr
+Summary:
+- Suffix heads are optional letters and are realized iff the stem's final phoneme is a vowel.
+- Suffix/stem tail is an optional 'N' which is realized iff a suffix follows it.
+- Suffix bodies are mandatory lists of phonemes.
+	- If the first phoneme is a vowel and the stem ends in a vowel, the stem's vowel is droped.
+	- Vowel harmony: A = a/e (low), I = ı/i/u/ü (high) based on front-back and roundness of previous vowel.
+	- Consonant mutation:  B = b/p, C = c,ç, D = d,t K = k/g/ğ
+		- voiced if preceded by a voiced consonant
+		- voiceless if preceded by a voiceless consonant
+		- voiced if in between two vowels
+		- g instead of ğ iff preceded by a consonant
+
+An example input can be of the form
+- yap + Iyor + (y)sA + (I)m
+which should produce the output
+- yapıyorsam
+
 */
 
 /* set of voiceless consonants for quick access, fıstıkçı şahap */
@@ -59,20 +78,21 @@ var vowel = map[rune]bool{
 	'ü': true,
 }
 
+/*
+The Stem representation contains the unrealized forms B,C,D,K,N,A,E. These are converted to actual
+letter when the Stem is converted to a string
+*/
 type Stem []rune
 type Root Stem
 
-/* head and tail are optional (single character for both) and determined by whether the stem's final char is a
-vowel or consonant. A value of 0 for optionals implied no head/tail character
-body is always appended
-*/
+/* head and tail are optional (single character for both) and a value of 0 implies no head/tail */
 type Suffix struct {
-	head, tail       rune
-	body           []rune
+	head, tail rune
+	body       []rune
 }
 
 var suffixes = map[string]Suffix{
-	/* tense/aspect (does not include -makta, can be encdoed as as -mak + -ta */
+	/* tense/aspect (does not include -makta, which can be encoded as as -mak + -ta */
 	"known past": Suffix{head: 0, tail: 0, body: []rune("DA")},
 	"infer past": Suffix{head: 0, tail: 0, body: []rune("mIş")},
 	"aorist a":   Suffix{head: 'A', tail: 0, body: []rune("r")},
@@ -86,21 +106,32 @@ var suffixes = map[string]Suffix{
 	"inf": Suffix{head: 0, tail: 0, body: []rune("mAk")},
 }
 
-// this function appends the suffix to the stem but does not resolve the vowel and consonant mutations
-// it handles the optional head and tail and the vowel drop
+/*
+this function appends the suffix to the stem but does not resolve the vowel and consonant mutations
+it handles the optional head and tail and the vowel drop
+*/
 func (stem Stem) append(suffix Suffix) Stem {
-	if vowel[stem[len(stem)-1]] != vowel[suffix.head[len(suffix.head)-1]] {
-		stem += suffix.head
-	}
-	stem += suffix.body
+//	if vowel[stem[len(stem)-1]] != vowel[suffix.head[len(suffix.head)-1]] {
+//		stem += suffix.head
+//	}
+//	stem += suffix.body
+	return stem
 }
 
-// stringer interface, this function returns the fully resolved word
-func (Stem stem) String() string {
+/*
+stringer interface, this function returns the fully resolved stem
+the start of the stem must not contain A/E/B/C/D/K/N
+*/
+func (stem Stem) String() string {
 	s := ""
-	for i, c := range stem {
-		switch c {
-		case 'K':
-		}
-	}
+
+	s += string(stem[0])
+
+	return s
+
+}
+
+
+func main() {
+
 }
