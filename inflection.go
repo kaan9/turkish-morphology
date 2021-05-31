@@ -5,7 +5,6 @@ Inflectional morphology of turkish words. Specifically, functions to perform agg
 (root + suffix + suffix ...) while respecting phonotactics (vowel harmony, consonant mutation) and exceptions.
 */
 
-//import "fmt"
 
 /*
 Each suffix has a body that is always included and an optional head and tail character that are included for
@@ -53,6 +52,12 @@ which should produce the output
 - yapıyorsam
 
 */
+
+
+import (
+	"fmt"
+	"regexp"
+)
 
 /* set of voiceless consonants for quick access, fıstıkçı şahap */
 var voiceless = map[rune]bool{
@@ -108,18 +113,17 @@ var quality_to_vowel = map[quality]rune{
 	quality{true, true, false}:   'ö',
 	quality{false, true, true}:   'u',
 	quality{true, true, true}:    'ü',
-	quality{false, false, false}: 'A',
-	quality{false, false, true}:  'I',
 }
 
+/* The Word representation only contains exact (fully resolved) characters. */
+type Word []rune
 /*
-The Word representation only contains exacts forms.
 The Stem representation can contain the unrealized forms B,C,D,K,N only at the end, all other
 letters must be fully realized. The final letter is realized when a suffix is appended or it is
 converted to a word
 */
-type Word []rune
 type Stem []rune
+
 type Root Stem
 
 /*
@@ -133,7 +137,7 @@ type Suffix struct {
 
 var suffixes = map[string]Suffix{
 	/* tense/aspect (does not include -makta, which can be encoded as as -mak + -ta */
-	"known past": Suffix{head: 0, tail: 0, body: []rune("DA")},
+	"known past": Suffix{head: 0, tail: 0, body: []rune("DI")},
 	"infer past": Suffix{head: 0, tail: 0, body: []rune("mIş")},
 	"aorist a":   Suffix{head: 'A', tail: 0, body: []rune("r")},
 	"aorist i":   Suffix{head: 'I', tail: 0, body: []rune("r")},
@@ -143,7 +147,7 @@ var suffixes = map[string]Suffix{
 	/* verb negation */
 	"neg": Suffix{head: 0, tail: 0, body: []rune("mA")},
 	/* infinitive */
-	"inf": Suffix{head: 0, tail: 0, body: []rune("mAk")},
+	"inf": Suffix{head: 0, tail: 0, body: []rune("mAK")},
 }
 
 /*
@@ -152,10 +156,10 @@ If vowel is A/I, returns the new quality and adjusted form of vowel
 If vowel is exact, returns the same vowel and its quality
 */
 func resolve_vowel(vowel rune, front, round bool) (q quality, v rune) {
-	switch v {
+	switch vowel {
 	case 'A':
-		v = quality_to_vowel[quality{front, round, false}]
-	case 'E':
+		v = quality_to_vowel[quality{front, false, false}]
+	case 'I':
 		v = quality_to_vowel[quality{front, round, true}]
 	default:
 		v = vowel
@@ -226,7 +230,7 @@ Combines the suffix with the stem but does not resolve final N/B/C/D/K after app
 Only resolves the consonant and vowel harmonies of the suffix and the final consonant
 of the original stem if it exists. Does not modify inputted stem
 */
-func (stem Stem) add(suffix Suffix) Stem {
+func (stem Stem) Append(suffix Suffix) Stem {
 	s := Stem(make([]rune, len(stem)))
 	copy(s, stem)
 
@@ -247,7 +251,7 @@ func (stem Stem) add(suffix Suffix) Stem {
 
 	/* get quality of latest exact vowel in stem */
 	front, round := false, false // quality of latest vowel
-	for i := len(s) - 1; i >= 0; i-- {
+	for i := len(stem) - 1; i >= 0; i-- {
 		if vowel[s[i]] && s[i] != 'A' && s[i] != 'I' {
 			q := vowel_to_quality[s[i]]
 			front, round = q.front, q.round
@@ -278,9 +282,10 @@ func (stem Stem) add(suffix Suffix) Stem {
 	return s
 }
 
-/* fully resolves the stem (resolves final consonant) and returns as []rune */
+/* fully resolves the stem (resolves final consonant) and returns as Word */
 func (stem Stem) Word() Word {
 	w := Word(make([]rune, len(stem)))
+	copy(w,stem)
 	if !vowel[w[len(w)-1]] {
 		/* value of prev is irrelevant; next == 0 implies a voiceless */
 		w[len(w)-1] = resolve_cons(0, w[len(w)-1], 0)
@@ -291,12 +296,16 @@ func (stem Stem) Word() Word {
 func (suffix Suffix) String() string {
 	head, tail := "", ""
 	if suffix.head != 0 {
-		head = string(suffix.head)
+		head = "(" + string(suffix.head) + ")"
 	}
 	if suffix.tail != 0 {
-		tail = string(suffix.tail)
+		tail = "(" + string(suffix.tail) + ")"
 	}
 	return head + string(suffix.body) + tail
+}
+
+func (root Root) String() string {
+	return string(root)
 }
 
 func (stem Stem) String() string {
@@ -307,6 +316,60 @@ func (word Word) String() string {
 	return string(word)
 }
 
-func main() {
+/* The root of a word is a list of exact characters with an optional B/C/D/K/N at the end */
+func ParseRoot(s string) (r Root, ok bool) {
+	re := regexp.MustCompile(`^\s*([a-zçğıöşü]*[a-zçğıöşüBCDKN])\s*$`)
+	if matches := re.FindStringSubmatch(s); len(matches) == 2 {
+		return Root(matches[1]), true
+	}
+	return Root(""), false
+}
 
+/*
+The suffix is a sequence of exact characters of B/C/D/K/N consisting of an optional head and tail
+that are 1 character long and a body of 1 or more characters
+*/
+func ParseSuffix(s string) (suf Suffix, ok bool) {
+	re := regexp.MustCompile(
+		`^\s*(?:\(([a-zçğıöşüBCDKNAI])\))?([a-zçğıöşüBCDKNAI]+)(?:\(([a-zçğıöşüBCDKNAI])\))?\s*$`)
+	if matches := re.FindStringSubmatch(s); len(matches) == 4 {
+		var h, t rune = 0, 0
+		if matches[1] != "" {
+			h = ([]rune(matches[1]))[0]
+		}
+		if matches[3] != "" {
+			t = ([]rune(matches[3]))[0]
+		}
+		return Suffix{head: h, tail: t, body: []rune(matches[2])}, true
+	}
+	return Suffix{head: 0, tail: 0, body: nil}, false
+
+}
+
+/*
+Parses a root followed by a sequence of suffixes. The input must be of the form
+ROOT [+- ]+ SUFFIX [+- ]+ SUFFIX ...
+That is, the root followed by a sequence of suffixes with non-empty whitespace,
+'+', and/or '-' symbols
+returns the Root and a slice of Suffixes and true on success
+returns the nil values and false on error
+*/
+func ParseInput(s string) (r Root, sufs []Suffix, ok bool) {
+	re := regexp.MustCompile(``)
+}
+
+func main() {
+	s := Stem(Root("denK"))
+	r, ok := ParseRoot("  \tdenK\t\f\r\n\t  ")
+	fmt.Printf("%v %v\n", r, ok)
+	suf1, ok := ParseSuffix("(y)AcAK(n)")
+	fmt.Printf("%v %v\n", suf1, ok)
+
+	for k, v := range suffixes {
+		fmt.Printf("Stem: %s\nAdding suffix %s: %s\n", s, k, v)
+		s = s.Append(v)
+	}
+	suf := Suffix{head: 0, tail: 0, body: []rune("(y)In")}
+	fmt.Print(suf)
+	fmt.Printf("Stem: %s\nWord: %s\n", s, s.Word())
 }
