@@ -76,16 +76,54 @@ var vowel = map[rune]bool{
 	'ö': true,
 	'u': true,
 	'ü': true,
+	'A': true,
+	'I': true,
+}
+
+type quality struct {
+	front, round, high bool
+}
+
+/* map of vowels to vowel (harmony) qualities */
+var vowel_to_quality = map[rune]quality{
+	'a': quality{false, false, false},
+	'e': quality{true, false, false},
+	'ı': quality{false, false, true},
+	'i': quality{true, false, true},
+	'o': quality{false, true, false},
+	'ö': quality{true, true, false},
+	'u': quality{false, true, true},
+	'ü': quality{true, true, true},
+	'A': quality{false, false, false}, /* can be both front or back but always low */
+	'I': quality{false, false, true},  /* can be both front or back, round or flat but always high */
+}
+
+/* map front, round, high qualities, in order, to vowels */
+var quality_to_vowel = map[quality]rune{
+	quality{false, false, false}: 'a',
+	quality{true, false, false}:  'e',
+	quality{false, false, true}:  'ı',
+	quality{true, false, true}:   'i',
+	quality{false, true, false}:  'o',
+	quality{true, true, false}:   'ö',
+	quality{false, true, true}:   'u',
+	quality{true, true, true}:    'ü',
+	quality{false, false, false}: 'A',
+	quality{false, false, true}:  'I',
 }
 
 /*
-The Stem representation contains the unrealized forms B,C,D,K,N,A,E. These are converted to actual
-letter when the Stem is converted to a string
+The Stem representation can contain the unrealized forms B,C,D,K,N only at the end, all other
+letters must be fully realized. The final letter is realized when a suffix is appended or the
+word is converted to a string
 */
 type Stem []rune
 type Root Stem
 
-/* head and tail are optional (single character for both) and a value of 0 implies no head/tail */
+/*
+head and tail are optional (single character for both) and a value of 0 implies no head/tail
+body must be non-empty
+*/
 type Suffix struct {
 	head, tail rune
 	body       []rune
@@ -107,15 +145,131 @@ var suffixes = map[string]Suffix{
 }
 
 /*
-this function appends the suffix to the stem but does not resolve the vowel and consonant mutations
-it handles the optional head and tail and the vowel drop
+takes in a vowel and front/round harmony it should conform to
+If vowel is A/I, returns the new quality and adjusted form of vowel
+If vowel is exact, returns the same vowel and its quality
 */
-func (stem Stem) append(suffix Suffix) Stem {
-//	if vowel[stem[len(stem)-1]] != vowel[suffix.head[len(suffix.head)-1]] {
-//		stem += suffix.head
-//	}
-//	stem += suffix.body
-	return stem
+func resolve_vowel(vowel rune, front, round bool) (q quality, v rune) {
+	switch v {
+	case 'A':
+		v = quality_to_vowel[quality{front, round, false}]
+	case 'E':
+		v = quality_to_vowel[quality{front, round, true}]
+	default:
+		v = vowel
+	}
+	q = vowel_to_quality[v]
+
+	return q, v
+}
+
+/*
+V: vowel, X: any consonant, H: voiceless, S: voices, 0: empty (start/end of word)
+V - S - V // k->ğ
+S - S - V // derdi    t softens to d when followed by vowel     k->g
+X - H - 0
+0 - H - X // choose voiceless as default if first letter of word
+H - H - V // kastırmak     üst üstün     test -> testin
+H - H - H // shouldn't happen?   üsttürmek if üst was a verb, anyways if should be hard regardless
+S - H - X //   dertli   t is hard,  dertsiz still hard
+V - H - X // katlı   katsız  gerekli     gereksiz     stays hard
+H - H - S // üstlü     sarkmak
+
+might be more useful to analyze this as consonants are hard by default and soften in specific cases
+*/
+
+/*
+takes in B/C/D/K/N or an exact consonant and the previous and next consonant
+returns correct consonant mutation form based on previous and next
+*/
+func resolve_cons(prev, c, next rune) rune {
+	if vowel[next] && prev != 0 && !voiceless[prev] {
+		switch c {
+		case 'B':
+			c = 'b'
+		case 'C':
+			c = 'c'
+		case 'D':
+			c = 'd'
+		case 'K':
+			c = 'g'
+		}
+	} else {
+		switch c {
+		case 'B':
+			c = 'p'
+		case 'C':
+			c = 'ç'
+		case 'D':
+			c = 't'
+		case 'K':
+			c = 'k'
+		}
+	}
+	if vowel[prev] && c == 'g' {
+		c = 'ğ'
+	}
+	if c == 'N' {
+		if next == 0 {
+			c = 0
+		} else {
+			c = 'n'
+		}
+	}
+	return c
+}
+
+/*
+Combines the suffix with the stem but does not resolve final N/B/C/D/K after appending
+Only resolves the consonant and vowel harmonies of the suffix and the final consonant
+of the original stem if it exists. Does not modify inputted stem
+*/
+func (stem Stem) add(suffix Suffix) Stem {
+	s := Stem(make([]rune, len(stem)))
+	copy(s, stem)
+
+	/* add optional suffix head if it is the opposite type (vowel/consonant) of the stem's final word */
+	if suffix.head != 0 && vowel[s[len(s)-1]] != vowel[suffix.head] {
+		s = append(s, suffix.head)
+	}
+
+	/* drop stem-final vowel if suffix begins with a vowel (-Iyor) */
+	if vowel[s[len(s)-1]] && vowel[suffix.body[0]] {
+		s = s[:len(s)-1]
+	}
+
+	s = append(s, suffix.body...)
+	if suffix.tail != 0 {
+		s = append(s, suffix.tail)
+	}
+
+	/* get quality of latest exact vowel in stem */
+	front, round := false, false // quality of latest vowel
+	for i := len(s) - 1; i >= 0; i-- {
+		if vowel[s[i]] && s[i] != 'A' && s[i] != 'I' {
+			q := vowel_to_quality[s[i]]
+			front, round = q.front, q.round
+			break
+		}
+	}
+
+	for i := len(stem) - 1; i < len(s)-1; i++ {
+		if vowel[s[i]] {
+			var q quality
+			q, s[i] = resolve_vowel(s[i], front, round)
+			front, round = q.front, q.round
+		} else {
+			var prev rune
+			if i == 0 {
+				prev = 0
+			} else {
+				prev = s[i-1]
+			}
+			s[i] = resolve_cons(prev, s[i], s[i+1])
+		}
+	}
+
+	return s
 }
 
 /*
@@ -125,12 +279,8 @@ the start of the stem must not contain A/E/B/C/D/K/N
 func (stem Stem) String() string {
 	s := ""
 
-	s += string(stem[0])
-
 	return s
-
 }
-
 
 func main() {
 
