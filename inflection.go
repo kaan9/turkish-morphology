@@ -113,10 +113,12 @@ var quality_to_vowel = map[quality]rune{
 }
 
 /*
+The Word representation only contains exacts forms.
 The Stem representation can contain the unrealized forms B,C,D,K,N only at the end, all other
-letters must be fully realized. The final letter is realized when a suffix is appended or the
-word is converted to a string
+letters must be fully realized. The final letter is realized when a suffix is appended or it is
+converted to a word
 */
+type Word []rune
 type Stem []rune
 type Root Stem
 
@@ -269,17 +271,40 @@ func (stem Stem) add(suffix Suffix) Stem {
 		}
 	}
 
+	if vowel[s[len(s)-1]] {
+		_, s[len(s)-1] = resolve_vowel(s[len(s)-1], front, round)
+	}
+
 	return s
 }
 
-/*
-stringer interface, this function returns the fully resolved stem
-the start of the stem must not contain A/E/B/C/D/K/N
-*/
-func (stem Stem) String() string {
-	s := ""
+/* fully resolves the stem (resolves final consonant) and returns as []rune */
+func (stem Stem) Word() Word {
+	w := Word(make([]rune, len(stem)))
+	if !vowel[w[len(w)-1]] {
+		/* value of prev is irrelevant; next == 0 implies a voiceless */
+		w[len(w)-1] = resolve_cons(0, w[len(w)-1], 0)
+	}
+	return w
+}
 
-	return s
+func (suffix Suffix) String() string {
+	head, tail := "", ""
+	if suffix.head != 0 {
+		head = string(suffix.head)
+	}
+	if suffix.tail != 0 {
+		tail = string(suffix.tail)
+	}
+	return head + string(suffix.body) + tail
+}
+
+func (stem Stem) String() string {
+	return string(stem)
+}
+
+func (word Word) String() string {
+	return string(word)
 }
 
 func main() {
