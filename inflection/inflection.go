@@ -1,11 +1,8 @@
-package main
+package inflection
 
 import (
-	"bufio"
-	"fmt"
 	"regexp"
 	"strings"
-	"os"
 )
 
 /* set of voiceless consonants for quick access, fıstıkçı şahap */
@@ -64,41 +61,31 @@ var quality_to_vowel = map[quality]rune{
 	quality{true, true, true}:    'ü',
 }
 
-/* The Word representation only contains exact (fully resolved) characters. */
-type Word []rune
 
 /*
-The Stem representation can contain the unrealized forms B,C,D,K,N only at the end, all other
-letters must be fully realized. The final letter is realized when a suffix is appended or it is
-converted to a word
+A Root can contain only exact characters except the final character which can be B,C,D,K,(n).
+The final letter is realized when a suffix is appended or it is converted to a word.
+*/
+type Root []rune
+
+/*
+A Stem can contain only exact characters except the final character which can be B,C,D,K,(n).
+The final letter is realized when a suffix is appended or it is converted to a word.
 */
 type Stem []rune
 
-type Root Stem
+/* A Word only contains exact (fully resolved) characters. */
+type Word []rune
 
 /*
-head and tail are optional (single character for both) and a value of 0 implies no head/tail
-body must be non-empty
+A Suffix has a non-empty body and optional, single-character head and tail
+A value of 0 for head and tail means no character
 */
 type Suffix struct {
-	head, tail rune
-	body       []rune
+	Head, Tail rune
+	Body       []rune
 }
 
-var suffixes = map[string]Suffix{
-	/* tense/aspect (does not include -makta, which can be encoded as as -mak + -ta */
-	"known past": Suffix{head: 0, tail: 0, body: []rune("DI")},
-	"infer past": Suffix{head: 0, tail: 0, body: []rune("mIş")},
-	"aorist a":   Suffix{head: 'A', tail: 0, body: []rune("r")},
-	"aorist i":   Suffix{head: 'I', tail: 0, body: []rune("r")},
-	"aorist neg": Suffix{head: 0, tail: 0, body: []rune("mAz")},
-	"pres cont":  Suffix{head: 0, tail: 0, body: []rune("Iyor")},
-	"fut":        Suffix{head: 'y', tail: 0, body: []rune("AcAK")},
-	/* verb negation */
-	"neg": Suffix{head: 0, tail: 0, body: []rune("mA")},
-	/* infinitive */
-	"inf": Suffix{head: 0, tail: 0, body: []rune("mAK")},
-}
 
 /*
 takes in a vowel and front/round harmony it should conform to
@@ -185,18 +172,18 @@ func (stem Stem) Append(suffix Suffix) Stem {
 	copy(s, stem)
 
 	/* add optional suffix head if it is the opposite type (vowel/consonant) of the stem's final word */
-	if suffix.head != 0 && vowel[s[len(s)-1]] != vowel[suffix.head] {
-		s = append(s, suffix.head)
+	if suffix.Head != 0 && vowel[s[len(s)-1]] != vowel[suffix.Head] {
+		s = append(s, suffix.Head)
 	}
 
 	/* drop stem-final vowel if suffix begins with a vowel (-Iyor) */
-	if vowel[s[len(s)-1]] && vowel[suffix.body[0]] {
+	if vowel[s[len(s)-1]] && vowel[suffix.Body[0]] {
 		s = s[:len(s)-1]
 	}
 
-	s = append(s, suffix.body...)
-	if suffix.tail != 0 {
-		s = append(s, suffix.tail)
+	s = append(s, suffix.Body...)
+	if suffix.Tail != 0 {
+		s = append(s, suffix.Tail)
 	}
 
 	/* get quality of latest exact vowel in stem */
@@ -245,13 +232,13 @@ func (stem Stem) Word() Word {
 
 func (suffix Suffix) String() string {
 	head, tail := "", ""
-	if suffix.head != 0 {
-		head = "(" + string(suffix.head) + ")"
+	if suffix.Head != 0 {
+		head = "(" + string(suffix.Head) + ")"
 	}
-	if suffix.tail != 0 {
-		tail = "(" + string(suffix.tail) + ")"
+	if suffix.Tail != 0 {
+		tail = "(" + string(suffix.Tail) + ")"
 	}
-	return head + string(suffix.body) + tail
+	return head + string(suffix.Body) + tail
 }
 
 func (root Root) String() string {
@@ -281,7 +268,7 @@ The suffix is a sequence of exact characters of A/I/B/C/D/K/N consisting of a no
 an optional head and tail characters marked by parenthesis
 returns nil, false on failure
 */
-func ParseSuffix(s string) (suf Suffix, ok bool) {
+func ParseSuffix(s string) (suf Suffix, ok bool) { //FIXME
 	re := regexp.MustCompile(
 		`^\s*(?:\(([a-zçğıöşüBCDKAI])\))?([a-zçğıöşüBCDKNAI]+)(?:\(([a-zçğıöşüBCDKNAI])\))?\s*$`)
 	if matches := re.FindStringSubmatch(s); len(matches) == 4 {
@@ -292,9 +279,9 @@ func ParseSuffix(s string) (suf Suffix, ok bool) {
 		if matches[3] != "" {
 			t = ([]rune(matches[3]))[0]
 		}
-		return Suffix{head: h, tail: t, body: []rune(matches[2])}, true
+		return Suffix{Head: h, Tail: t, Body: []rune(matches[2])}, true
 	}
-	return Suffix{head: 0, tail: 0, body: nil}, false
+	return Suffix{Head: 0, Tail: 0, Body: nil}, false
 
 }
 
@@ -325,21 +312,3 @@ func ParseRootSuffixes(s string) (root Root, sufs []Suffix, ok bool) {
 
 }
 
-func main() {
-	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Printf("Input root and suffixes:\n")
-	if scanner.Scan() {
-		root, sufs, ok := ParseRootSuffixes(scanner.Text())
-		if !ok {
-			fmt.Printf("Error: failed to parse input\n")
-			return
-		}
-		s := Stem(root)
-		for _, suf := range sufs {
-			fmt.Printf("Stem: %s\nAdding suffix %s\n", s, suf)
-			s = s.Append(suf)
-		}
-		fmt.Printf("Stem: %s\nWord: %s\n\n", s, s.Word())
-
-	}
-}
