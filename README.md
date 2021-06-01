@@ -1,6 +1,28 @@
 # Turkish Morphology
 Algorithms implementing features of Turkish morphology
 
+## Phonology
+
+### Consonants
+|	|	| Labial | Dental/Alveolar | Postalveolar | Palatal | Velar | Glottal |
+|-------|-------|:------:|:---------------:|:------------:|:-------:|:-----:|:-------:|
+| Nasal | | m | n | | | | |
+| Plosive | voiceless | p | t | ç | (k) | k | |
+|  | voiced | b | d | c | (g) | g | |
+| Fricative | voiceless | f | s | ş | | | h |
+|  | voiced | v | z | j | | | |
+| Approximant | | (v) | (l) | l | y | (ğ) | |
+| Flap | | | | r | | | |
+
+### Vowels
+
+|	| Front	|	| Back	|	|
+|-------|:-----:|:-----:|:-----:|:-----:|
+|	| flat	| round	| flat	| round	|
+|Close (High)	| i	| ü	| ı	| u	|
+|Open (Low)	| e	| ö	| a	| o	|
+
+
 ## Package `inflection`
 Inflectional morphology of turkish words.
 Functions to perform agglutination (root + suffix + suffix ...) while respecting phonotactics (vowel harmony, consonant mutation) and their exceptions.
