@@ -5,7 +5,6 @@ Inflectional morphology of turkish words. Specifically, functions to perform agg
 (root + suffix + suffix ...) while respecting phonotactics (vowel harmony, consonant mutation) and exceptions.
 */
 
-
 /*
 Each suffix has a body that is always included and an optional head and tail character that are included for
 phonotactics. A consonant head is realized iff the stem's final character is a vowel and a vowel head is realized
@@ -53,11 +52,12 @@ which should produce the output
 
 */
 
-
 import (
+	"bufio"
 	"fmt"
 	"regexp"
 	"strings"
+	"os"
 )
 
 /* set of voiceless consonants for quick access, fıstıkçı şahap */
@@ -118,6 +118,7 @@ var quality_to_vowel = map[quality]rune{
 
 /* The Word representation only contains exact (fully resolved) characters. */
 type Word []rune
+
 /*
 The Stem representation can contain the unrealized forms B,C,D,K,N only at the end, all other
 letters must be fully realized. The final letter is realized when a suffix is appended or it is
@@ -286,7 +287,7 @@ func (stem Stem) Append(suffix Suffix) Stem {
 /* fully resolves the stem (resolves final consonant) and returns as Word */
 func (stem Stem) Word() Word {
 	w := Word(make([]rune, len(stem)))
-	copy(w,stem)
+	copy(w, stem)
 	if !vowel[w[len(w)-1]] {
 		/* value of prev is irrelevant; next == 0 implies a voiceless */
 		w[len(w)-1] = resolve_cons(0, w[len(w)-1], 0)
@@ -356,6 +357,7 @@ returns the nil values and false on error
 */
 func ParseRootSuffix(s string) (root Root, sufs []Suffix, ok bool) {
 	words := strings.Fields(s)
+	fmt.Printf("words: %v\n", words)
 	if len(words) == 0 {
 		return Root(nil), []Suffix(nil), false
 	}
@@ -375,22 +377,22 @@ func ParseRootSuffix(s string) (root Root, sufs []Suffix, ok bool) {
 }
 
 func main() {
-	s := Stem(Root("denK"))
-	r, ok := ParseRoot("  \tdenK\t\f\r\n\t  ")
-	fmt.Printf("%v %v\n", r, ok)
-	suf1, ok := ParseSuffix("(y)AcAK(n)")
-	fmt.Printf("%v %v\n", suf1, ok)
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Printf("Input root and suffixes:\n")
+	if scanner.Scan() {
+		fmt.Println(scanner.Text())
+		root, sufs, ok := ParseRootSuffix(scanner.Text())
+		if ok {
+			fmt.Printf("%v  %v\n", root, sufs)
+		} else {
+			fmt.Printf("Error: failed to parse input\n")
+		}
+		s := Stem(root)
+		for _, suf := range sufs {
+			fmt.Printf("Stem: %s\nAdding suffix %s\n", s, suf)
+			s = s.Append(suf)
+		}
+		fmt.Printf("Stem: %s\nWord: %s\n\n", s, s.Word())
 
-	root, sufs, ok := ParseRootSuffix("a b c d e f g")
-	if ok {
-		fmt.Printf("%v  %v\n", root, sufs)
-	} else {
-		fmt.Printf("Error: failed to parse inpt")
 	}
-
-	for k, v := range suffixes {
-		fmt.Printf("Stem: %s\nAdding suffix %s: %s\n", s, k, v)
-		s = s.Append(v)
-	}
-	fmt.Printf("Stem: %s\nWord: %s\n", s, s.Word())
 }
