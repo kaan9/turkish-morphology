@@ -1,57 +1,5 @@
 package main
 
-/*
-Inflectional morphology of turkish words. Specifically, functions to perform agglutination
-(root + suffix + suffix ...) while respecting phonotactics (vowel harmony, consonant mutation) and exceptions.
-*/
-
-/*
-Each suffix has a body that is always included and an optional head and tail character that are included for
-phonotactics. A consonant head is realized iff the stem's final character is a vowel and a vowel head is realized
-iff the stem's final character is a consonant.
-The only character that appears as an optional tail is 'n', which appears in the roots bu, şu, o
-(bu + i -> bunu, o + a -> ona, etc.) and the 3rd person possessive suffix -(s)I(n-) (as well as its plural form
--lar + -(s)I(n-) -> -larI(n-)). Therefore, the optional tail, when part of the stem, is represented by:
- - N = 'n' or nothing
-N is realized as 'n' if and only if a suffix is added after it. (The actual rules are more complex and not fully
-implemented, this is a simplifying assumption.)
-
-The addition of a suffix can never cause consecutive vowels (and generally does not cause consecutive consonants
-in the same syllable, an exception is -t: yaptır + -t -> yaptırt) so if the stem ends in a vowel, there is no
-optional consonant head, and the body begins with a vowel, the stem's final vowel is dropped. The only instance
-of this is the -iyor suffix: for -iyor: başla + iyor -> başlıyor
-
-For the stem and the suffix head and body, the characters used for encoding are:
-- lowercase characters are not subject to vowel harmony or consonant mutation and match themselves exactly.
-- uppercase characters are subject to both and the encodings are:
-  B = b/p, C = c,ç, D = d,t K = k/g/ğ	A = a/e (low), I = ı/i/u/ü (high)
-  K becomes a ğ when a vowel follows it except when preceded by a consonant in which case it becomes g
-  consonant voicing generally happens in multisyllabic stems but there are exceptions (git, gidiyorum) which are
-  encoded in the root; "git" would be encoded as "giD"
-The tail can only contain N which can also be the stem's final character. N is realized as 'n' if followed by
-a vowel and is removed otherwise.
-
-as an example, the suffix -iyor would be written as "Iyor" and the root 'bu' is represented as the stem 'buN'
-
-Summary:
-- Suffix heads are optional letters and are realized iff the stem's final phoneme is a vowel.
-- Suffix/stem tail is an optional 'N' which is realized iff a suffix follows it.
-- Suffix bodies are mandatory lists of phonemes.
-	- If the first phoneme is a vowel and the stem ends in a vowel, the stem's vowel is droped.
-	- Vowel harmony: A = a/e (low), I = ı/i/u/ü (high) based on front-back and roundness of previous vowel.
-	- Consonant mutation:  B = b/p, C = c,ç, D = d,t K = k/g/ğ
-		- voiced if preceded by a voiced consonant
-		- voiceless if preceded by a voiceless consonant
-		- voiced if in between two vowels
-		- g instead of ğ iff preceded by a consonant
-
-An example input can be of the form
-- yap + Iyor + (y)sA + (I)m
-which should produce the output
-- yapıyorsam
-
-*/
-
 import (
 	"bufio"
 	"fmt"
@@ -318,22 +266,24 @@ func (word Word) String() string {
 	return string(word)
 }
 
-/* The root of a word is a list of exact characters with an optional B/C/D/K/N at the end */
+/* The root of a word is a list of exact characters. The final character can be one of
+B/C/D/K or (n). n must be parenthesized if it is used as an optional final character */
 func ParseRoot(s string) (r Root, ok bool) {
-	re := regexp.MustCompile(`^\s*([a-zçğıöşü]*[a-zçğıöşüBCDKN])\s*$`)
-	if matches := re.FindStringSubmatch(s); len(matches) == 2 {
-		return Root(matches[1]), true
+	re := regexp.MustCompile(`^\s*([a-zçğıöşü]*)(?:([a-zçğıöşüBCDK])|(?:\((n)\)))\s*$`)
+	if matches := re.FindStringSubmatch(s); len(matches) == 4 {
+		return Root(matches[1] + matches[2] + matches[3]), true
 	}
 	return Root(""), false
 }
 
 /*
-The suffix is a sequence of exact characters of B/C/D/K/N consisting of an optional head and tail
-that are 1 character long and a body of 1 or more characters
+The suffix is a sequence of exact characters of A/I/B/C/D/K/N consisting of a non-empty body and
+an optional head and tail characters marked by parenthesis
+returns nil, false on failure
 */
 func ParseSuffix(s string) (suf Suffix, ok bool) {
 	re := regexp.MustCompile(
-		`^\s*(?:\(([a-zçğıöşüBCDKNAI])\))?([a-zçğıöşüBCDKNAI]+)(?:\(([a-zçğıöşüBCDKNAI])\))?\s*$`)
+		`^\s*(?:\(([a-zçğıöşüBCDKAI])\))?([a-zçğıöşüBCDKNAI]+)(?:\(([a-zçğıöşüBCDKNAI])\))?\s*$`)
 	if matches := re.FindStringSubmatch(s); len(matches) == 4 {
 		var h, t rune = 0, 0
 		if matches[1] != "" {
@@ -355,9 +305,8 @@ That is, the root followed by a sequence of suffixes with whitespace as delimite
 returns the Root and a slice of Suffixes and true on success
 returns the nil values and false on error
 */
-func ParseRootSuffix(s string) (root Root, sufs []Suffix, ok bool) {
+func ParseRootSuffixes(s string) (root Root, sufs []Suffix, ok bool) {
 	words := strings.Fields(s)
-	fmt.Printf("words: %v\n", words)
 	if len(words) == 0 {
 		return Root(nil), []Suffix(nil), false
 	}
@@ -380,12 +329,10 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Printf("Input root and suffixes:\n")
 	if scanner.Scan() {
-		fmt.Println(scanner.Text())
-		root, sufs, ok := ParseRootSuffix(scanner.Text())
-		if ok {
-			fmt.Printf("%v  %v\n", root, sufs)
-		} else {
+		root, sufs, ok := ParseRootSuffixes(scanner.Text())
+		if !ok {
 			fmt.Printf("Error: failed to parse input\n")
+			return
 		}
 		s := Stem(root)
 		for _, suf := range sufs {
