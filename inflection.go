@@ -57,6 +57,7 @@ which should produce the output
 import (
 	"fmt"
 	"regexp"
+	"strings"
 )
 
 /* set of voiceless consonants for quick access, fıstıkçı şahap */
@@ -348,14 +349,29 @@ func ParseSuffix(s string) (suf Suffix, ok bool) {
 
 /*
 Parses a root followed by a sequence of suffixes. The input must be of the form
-ROOT [+- ]+ SUFFIX [+- ]+ SUFFIX ...
-That is, the root followed by a sequence of suffixes with non-empty whitespace,
-'+', and/or '-' symbols
+ROOT SUFFIX SUFFIX ...
+That is, the root followed by a sequence of suffixes with whitespace as delimiter
 returns the Root and a slice of Suffixes and true on success
 returns the nil values and false on error
 */
-func ParseInput(s string) (r Root, sufs []Suffix, ok bool) {
-	re := regexp.MustCompile(``)
+func ParseRootSuffix(s string) (root Root, sufs []Suffix, ok bool) {
+	words := strings.Fields(s)
+	if len(words) == 0 {
+		return Root(nil), []Suffix(nil), false
+	}
+	root, ok = ParseRoot(words[0])
+	if !ok {
+		return Root(nil), []Suffix(nil), false
+	}
+	for i := 1; i < len(words); i++ {
+		suf, ok := ParseSuffix(words[i])
+		if !ok {
+			return Root(nil), []Suffix(nil), false
+		}
+		sufs = append(sufs, suf)
+	}
+	return root, sufs, true
+
 }
 
 func main() {
@@ -365,11 +381,16 @@ func main() {
 	suf1, ok := ParseSuffix("(y)AcAK(n)")
 	fmt.Printf("%v %v\n", suf1, ok)
 
+	root, sufs, ok := ParseRootSuffix("a b c d e f g")
+	if ok {
+		fmt.Printf("%v  %v\n", root, sufs)
+	} else {
+		fmt.Printf("Error: failed to parse inpt")
+	}
+
 	for k, v := range suffixes {
 		fmt.Printf("Stem: %s\nAdding suffix %s: %s\n", s, k, v)
 		s = s.Append(v)
 	}
-	suf := Suffix{head: 0, tail: 0, body: []rune("(y)In")}
-	fmt.Print(suf)
 	fmt.Printf("Stem: %s\nWord: %s\n", s, s.Word())
 }
