@@ -192,9 +192,9 @@ func TestAppend(t *testing.T) {
 			}
 			stem = stem.Append(suf)
 		}
-		word := Word(stem)
+		word := stem.Word()
 		if !reflect.DeepEqual(word, valid_words[i]) {
-			t.Errorf("Word(%v) = %v, expected %v", stem, word, valid_words[i])
+			t.Errorf("(%v).Word() = %v, expected %v", stem, word, valid_words[i])
 		}
 	}
 }
