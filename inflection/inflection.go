@@ -77,8 +77,8 @@ type Stem []rune
 type Word []rune
 
 /*
-A Suffix has a non-empty body and optional, single-character head and tail
-A value of 0 for head and tail means no character
+A Suffix has body that is a list of runes and an optional, single-character head and tail
+A value of 0 for head and tail means no character. Only 'n' is a valid tail.
 */
 type Suffix struct {
 	Head, Tail rune
@@ -103,7 +103,6 @@ func resolve_vowel(vowel rune, front, round bool) (q quality, v rune) {
 
 	return q, v
 }
-
 
 /*
 takes in B/C/D/K/N or an exact consonant and the previous and next consonant
@@ -161,7 +160,7 @@ func (stem Stem) Append(suffix Suffix) Stem {
 	}
 
 	/* drop stem-final vowel if suffix begins with a vowel (-Iyor) */
-	if vowel[s[len(s)-1]] && vowel[suffix.Body[0]] {
+	if vowel[s[len(s)-1]] && len(suffix.Body) != 0 && vowel[suffix.Body[0]] {
 		s = s[:len(s)-1]
 	}
 
@@ -253,10 +252,10 @@ func ParseRoot(s string) (r Root, ok bool) {
 }
 
 /*
-The suffix is a sequence of exact characters or A/I/B/C/D/K consisting of a non-empty body and
+The suffix is a sequence of exact characters or A/I/B/C/D/K consisting of a body and
 an optional head and tail character marked by parenthesis. The tail can only be (n).
 */
-func ParseSuffix(s string) (suf Suffix, ok bool) { //FIXME
+func ParseSuffix(s string) (suf Suffix, ok bool) {
 	re := regexp.MustCompile(
 		`^\s*(?:\(([a-zçğıöşüBCDKAI])\))?([a-zçğıöşüBCDKAI]+)(?:\((n)\))?\s*$`)
 	if matches := re.FindStringSubmatch(s); len(matches) == 4 {

@@ -73,7 +73,7 @@ func TestParseSuffix(t *testing.T) {
 
 	invalid := []string{
 		"(I)", "(I)(n)", "buN", "bu(s)", "(KC)bcd", "(A)bee(I)", "()a()",
-		"(N)A",	"(IA)I(n)", "n(A)", "(nn)nn(n)",
+		"(N)A", "(IA)I(n)", "n(A)", "(nn)nn(n)",
 	}
 	for _, s := range invalid {
 		suf, ok := ParseSuffix(s)
@@ -83,7 +83,6 @@ func TestParseSuffix(t *testing.T) {
 	}
 
 }
-
 
 func TestParseRootSuffixes(t *testing.T) {
 	valid := []string{
@@ -97,7 +96,7 @@ func TestParseRootSuffixes(t *testing.T) {
 
 	valid_sufs := [][]Suffix{
 		[]Suffix{
-			Suffix{Head: 'I',  Tail: 0, Body: []rune("ş")},
+			Suffix{Head: 'I', Tail: 0, Body: []rune("ş")},
 			Suffix{Head: 0, Tail: 0, Body: []rune("DIr")},
 			Suffix{Head: 'I', Tail: 0, Body: []rune("l")},
 			Suffix{Head: 'y', Tail: 0, Body: []rune("AmA")},
@@ -107,7 +106,7 @@ func TestParseRootSuffixes(t *testing.T) {
 			Suffix{Head: 0, Tail: 0, Body: []rune("DAn")},
 			Suffix{Head: 'y', Tail: 0, Body: []rune("mIş")},
 			Suffix{Head: 0, Tail: 0, Body: []rune("çA")},
-			Suffix{Head: 's',  Tail: 'n', Body: []rune("I")},
+			Suffix{Head: 's', Tail: 'n', Body: []rune("I")},
 			Suffix{Head: 'y', Tail: 0, Body: []rune("A")},
 		},
 		[]Suffix{
@@ -119,17 +118,15 @@ func TestParseRootSuffixes(t *testing.T) {
 			Suffix{Head: 0, Tail: 0, Body: []rune("mI")},
 			Suffix{Head: 'y', Tail: 0, Body: []rune("mIş")},
 		},
-
 	}
 
 	for i, s := range valid {
 		root, sufs, ok := ParseRootSuffixes(s)
 		if !ok || !reflect.DeepEqual(valid_roots[i], root) || !reflect.DeepEqual(valid_sufs[i], sufs) {
 			t.Errorf("ParseRootSuffix(%s) = (%#v, %#v, %v), expected (%#v, %#v, %v)",
-			s, root, sufs, ok, valid_roots[i], valid_sufs[i], true)
+				s, root, sufs, ok, valid_roots[i], valid_sufs[i], true)
 		}
 	}
-
 
 	invalid := []string{
 		"",
@@ -138,12 +135,11 @@ func TestParseRootSuffixes(t *testing.T) {
 		root, sufs, ok := ParseRootSuffixes(s)
 		if ok {
 			t.Errorf("ParseRootSuffix(%s) = (%#v, %#v, %v), expected (%#v, %#v, %v)",
-			s, root, sufs, ok, nil, nil, false)
+				s, root, sufs, ok, nil, nil, false)
 		}
 	}
 
 }
-
 
 func TestAppend(t *testing.T) {
 	valid := []string{
