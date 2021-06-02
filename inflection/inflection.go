@@ -61,7 +61,6 @@ var quality_to_vowel = map[quality]rune{
 	quality{true, true, true}:    'ü',
 }
 
-
 /*
 A Root can contain only exact characters except the final character which can be B,C,D,K,(n).
 The final letter is realized when a suffix is appended or it is converted to a word.
@@ -85,7 +84,6 @@ type Suffix struct {
 	Head, Tail rune
 	Body       []rune
 }
-
 
 /*
 takes in a vowel and front/round harmony it should conform to
@@ -258,7 +256,10 @@ B/C/D/K or (n). n must be parenthesized if it is used as an optional final chara
 func ParseRoot(s string) (r Root, ok bool) {
 	re := regexp.MustCompile(`^\s*([a-zçğıöşü]*)(?:([a-zçğıöşüBCDK])|(?:\((n)\)))\s*$`)
 	if matches := re.FindStringSubmatch(s); len(matches) == 4 {
-		return Root(matches[1] + matches[2] + matches[3]), true
+		if matches[3] != "" {
+			return Root(matches[1] + "N"), true
+		}
+		return Root(matches[1] + matches[2]), true
 	}
 	return Root(""), false
 }
@@ -311,4 +312,3 @@ func ParseRootSuffixes(s string) (root Root, sufs []Suffix, ok bool) {
 	return root, sufs, true
 
 }
-
