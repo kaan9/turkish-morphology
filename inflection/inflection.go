@@ -181,7 +181,7 @@ func (stem Stem) Append(suffix Suffix) Stem {
 
 	s = append(s, suffix.Body...)
 	if suffix.Tail != 0 {
-		s = append(s, suffix.Tail)
+		s = append(s, 'N') /* (n) is the only valid suffix */
 	}
 
 	/* get quality of latest exact vowel in stem */
@@ -251,8 +251,10 @@ func (word Word) String() string {
 	return string(word)
 }
 
-/* The root of a word is a list of exact characters. The final character can be one of
-B/C/D/K or (n). n must be parenthesized if it is used as an optional final character */
+/*
+The root of a word is a list of exact characters. The final character can be one of
+B/C/D/K or (n). n must be parenthesized if it is used as an optional final character
+*/
 func ParseRoot(s string) (r Root, ok bool) {
 	re := regexp.MustCompile(`^\s*([a-zçğıöşü]*)(?:([a-zçğıöşüBCDK])|(?:\((n)\)))\s*$`)
 	if matches := re.FindStringSubmatch(s); len(matches) == 4 {
@@ -265,13 +267,12 @@ func ParseRoot(s string) (r Root, ok bool) {
 }
 
 /*
-The suffix is a sequence of exact characters of A/I/B/C/D/K/N consisting of a non-empty body and
-an optional head and tail characters marked by parenthesis
-returns nil, false on failure
+The suffix is a sequence of exact characters or A/I/B/C/D/K consisting of a non-empty body and
+an optional head and tail character marked by parenthesis. The tail can only be (n).
 */
 func ParseSuffix(s string) (suf Suffix, ok bool) { //FIXME
 	re := regexp.MustCompile(
-		`^\s*(?:\(([a-zçğıöşüBCDKAI])\))?([a-zçğıöşüBCDKNAI]+)(?:\(([a-zçğıöşüBCDKNAI])\))?\s*$`)
+		`^\s*(?:\(([a-zçğıöşüBCDKAI])\))?([a-zçğıöşüBCDKAI]+)(?:\((n)\))?\s*$`)
 	if matches := re.FindStringSubmatch(s); len(matches) == 4 {
 		var h, t rune = 0, 0
 		if matches[1] != "" {
