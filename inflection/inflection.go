@@ -104,20 +104,6 @@ func resolve_vowel(vowel rune, front, round bool) (q quality, v rune) {
 	return q, v
 }
 
-/*
-V: vowel, X: any consonant, H: voiceless, S: voices, 0: empty (start/end of word)
-V - S - V // k->ğ
-S - S - V // derdi    t softens to d when followed by vowel     k->g
-X - H - 0
-0 - H - X // choose voiceless as default if first letter of word
-H - H - V // kastırmak     üst üstün     test -> testin
-H - H - H // shouldn't happen?   üsttürmek if üst was a verb, anyways if should be hard regardless
-S - H - X //   dertli   t is hard,  dertsiz still hard
-V - H - X // katlı   katsız  gerekli     gereksiz     stays hard
-H - H - S // üstlü     sarkmak
-
-might be more useful to analyze this as consonants are hard by default and soften in specific cases
-*/
 
 /*
 takes in B/C/D/K/N or an exact consonant and the previous and next consonant

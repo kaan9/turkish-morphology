@@ -76,12 +76,27 @@ For the stem and the suffix head and body, the **varying** characters used for e
 	* voiced if in between two vowels
 	* voiceless otherwise
 	* g instead of ğ if preceded by a consonant
+	* Examples:
 
 * `A = a/e, I = ı/i/u/ü`
 	* `A` and `I` represent low and high vowels and are resolved using vowel front-back and rounding harmony
 	
 Consonant voicing generally happens in multisyllabic stems but there are exceptions (git, gidiyorum) which are
 encoded in the root: `git` is encoded as `giD`.
+
+#### Consonant mutation examples
+
+Using V: vowel, X: any consonant, H: voiceless, S: voiced, 0: none (start/end of word)
+
+* `V[S]V		kağıDı	(k->ğ)`
+* `S[S]V		derDi	(k->g)`
+* `X[H]0		kağıT`
+* `0[H]X		Kağıt	(voiceless chosen as default)`
+* `H[H]V		kasTetmek`
+* `H[H]H		üsTsüz`
+* `S[H]X		derTli derTsiz`
+* `V[H]X		kaTlı kaTsız`
+* `H[H]S		üsTlü`
 
 ---
 
