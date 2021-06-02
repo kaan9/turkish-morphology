@@ -3,11 +3,9 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"os"
 	inf "github.com/kaan9/turkish-morphology/inflection"
+	"os"
 )
-
-
 
 var suffixes = map[string]inf.Suffix{
 	/* tense/aspect (does not include -makta, which can be encoded as as -mak + -ta */
@@ -22,6 +20,15 @@ var suffixes = map[string]inf.Suffix{
 	"neg": inf.Suffix{Head: 0, Tail: 0, Body: []rune("mA")},
 	/* infinitive */
 	"inf": inf.Suffix{Head: 0, Tail: 0, Body: []rune("mAK")},
+}
+
+
+/*
+Break word up into syllables. Syllables are of the form (C)V((G)C) where the onset always has
+priority.
+*/
+func Syllables(s string) []string{
+	return nil
 }
 
 func main() {

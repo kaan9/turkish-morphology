@@ -93,7 +93,7 @@ The package defines:
 * The functions `ParseRoot`, `ParseSuffix`, and `ParseRootSuffixes` take in a string and parse a `Root`, a `Suffix`, and a `Root` followed by a variable number of `Suffix`es
 
 #### Examples
-`yap + Iyor + (y)sA + (I)m` which should produce `yapıyorsam`
+`yap Iyor (y)sA (I)m` which should produce `yapıyorsam`
 
 `bu(n) lAr (n)In ki lAr DAn` which should produce  `bunlarinkilerden`
 
