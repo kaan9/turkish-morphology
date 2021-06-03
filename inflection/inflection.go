@@ -67,8 +67,10 @@ The final letter is realized when a suffix is appended or it is converted to a w
 */
 type Root []rune
 
+//TODO: turn Stem into a struct and have the optional (n) be an explicit 'tail' rather than a part
+// of the body as 'N'
 /*
-A Stem can contain only exact characters except the final character which can be B,C,D,K,(n).
+A Stem can contain only exact characters except the final character which can be B,C,D,K,N.
 The final letter is realized when a suffix is appended or it is converted to a word.
 */
 type Stem []rune
