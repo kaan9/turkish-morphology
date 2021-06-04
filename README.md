@@ -112,6 +112,8 @@ The package defines:
 
 `bu(n) lAr (n)In ki lAr DAn` which should produce  `bunlarinkilerden`
 
+`avrupa lI lAş DIr AmA DIK lAr (I)mIz DAn (y)mIş sInIz CAsInA` which should produce `avrupalılaştıramadıklarımızdanmışsınızcasına`
+
 Example implementation:
 ```
 root, suffixes, _ := ParseRootSuffixes("bu(n) lAr (n)In ki lAr DAn")
