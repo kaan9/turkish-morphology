@@ -18,7 +18,7 @@ var voiceless = map[rune]bool{
 }
 
 /* set of vowels */
-var vowel = map[rune]bool{
+var Vowel = map[rune]bool{
 	'a': true,
 	'e': true,
 	'ı': true,
@@ -111,7 +111,7 @@ takes in B/C/D/K/N or an exact consonant and the previous and next consonant
 returns correct consonant mutation form based on previous and next
 */
 func resolve_cons(prev, c, next rune) rune {
-	if vowel[next] && prev != 0 && !voiceless[prev] {
+	if Vowel[next] && prev != 0 && !voiceless[prev] {
 		switch c {
 		case 'B':
 			c = 'b'
@@ -134,7 +134,7 @@ func resolve_cons(prev, c, next rune) rune {
 			c = 'k'
 		}
 	}
-	if vowel[prev] && c == 'g' {
+	if Vowel[prev] && c == 'g' {
 		c = 'ğ'
 	}
 	if c == 'N' {
@@ -157,12 +157,12 @@ func (stem Stem) Append(suffix Suffix) Stem {
 	copy(s, stem)
 
 	/* add optional suffix head if it is the opposite type (vowel/consonant) of the stem's final word */
-	if suffix.Head != 0 && vowel[s[len(s)-1]] != vowel[suffix.Head] {
+	if suffix.Head != 0 && Vowel[s[len(s)-1]] != Vowel[suffix.Head] {
 		s = append(s, suffix.Head)
 	}
 
 	/* drop stem-final vowel if suffix begins with a vowel (-Iyor) */
-	if vowel[s[len(s)-1]] && len(suffix.Body) != 0 && vowel[suffix.Body[0]] {
+	if Vowel[s[len(s)-1]] && len(suffix.Body) != 0 && Vowel[suffix.Body[0]] {
 		s = s[:len(s)-1]
 	}
 
@@ -174,7 +174,7 @@ func (stem Stem) Append(suffix Suffix) Stem {
 	/* get quality of latest exact vowel in stem */
 	front, round := false, false // quality of latest vowel
 	for i := len(stem) - 1; i >= 0; i-- {
-		if vowel[s[i]] && s[i] != 'A' && s[i] != 'I' {
+		if Vowel[s[i]] && s[i] != 'A' && s[i] != 'I' {
 			q := vowel_to_quality[s[i]]
 			front, round = q.front, q.round
 			break
@@ -182,7 +182,7 @@ func (stem Stem) Append(suffix Suffix) Stem {
 	}
 
 	for i := len(stem) - 1; i < len(s)-1; i++ {
-		if vowel[s[i]] {
+		if Vowel[s[i]] {
 			var q quality
 			q, s[i] = resolve_vowel(s[i], front, round)
 			front, round = q.front, q.round
@@ -197,7 +197,7 @@ func (stem Stem) Append(suffix Suffix) Stem {
 		}
 	}
 
-	if vowel[s[len(s)-1]] {
+	if Vowel[s[len(s)-1]] {
 		_, s[len(s)-1] = resolve_vowel(s[len(s)-1], front, round)
 	}
 
@@ -208,7 +208,7 @@ func (stem Stem) Append(suffix Suffix) Stem {
 func (stem Stem) Word() Word {
 	w := Word(make([]rune, len(stem)))
 	copy(w, stem)
-	if !vowel[w[len(w)-1]] {
+	if !Vowel[w[len(w)-1]] {
 		/* value of prev is irrelevant; next == 0 implies a voiceless */
 		w[len(w)-1] = resolve_cons(0, w[len(w)-1], 0)
 	}
@@ -254,10 +254,13 @@ func ParseRoot(s string) (r Root, ok bool) {
 }
 
 /*
-The suffix is a sequence of exact characters or A/I/B/C/D/K consisting of a body and
+The suffix is a sequence of exact characters or A/I/B/C/D/K consisting of a variable body and
 an optional head and tail character marked by parenthesis. The tail can only be (n).
 */
 func ParseSuffix(s string) (suf Suffix, ok bool) {
+	if s == "" {
+		return Suffix{Head: 0, Tail: 0, Body: []rune{}}, true
+	}
 	re := regexp.MustCompile(
 		`^\s*(?:\(([a-zçğıöşüBCDKAI])\))?([a-zçğıöşüBCDKAI]+)(?:\((n)\))?\s*$`)
 	if matches := re.FindStringSubmatch(s); len(matches) == 4 {
