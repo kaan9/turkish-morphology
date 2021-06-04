@@ -301,5 +301,4 @@ func ParseRootSuffixes(s string) (root Root, sufs []Suffix, ok bool) {
 		sufs = append(sufs, suf)
 	}
 	return root, sufs, true
-
 }
