@@ -32,7 +32,7 @@ var suffixes = map[string]inf.Suffix{
 
 	/* case (all except def. accusative can be come before predicative personal suffixes?) */
 	"ABSL":    suffix(""),     /* Absolute (yalın) case */
-	"ACC.DEF": suffix("(y)I"), /* Definite accusative */
+	"ACC": suffix("(y)I"), /* Definite accusative */
 	"DAT":     suffix("(y)A"), /* dative-directional/lative */
 	"GEN":     suffix("(n)In"),
 	"LOC":     suffix("DA"),
@@ -153,8 +153,6 @@ var suffixes = map[string]inf.Suffix{
 
 	/* N/ADJ from V */
 	"N.V.CI": suffix("CI"), /* person involved with noun */
-
-	"TEST": suffix("(y)A"),
 }
 
 func suffix(s string) inf.Suffix {
