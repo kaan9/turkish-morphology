@@ -127,16 +127,26 @@ var suffixes = map[string]inf.Suffix{
 	"PTCP.IMPRS.PFV":      suffix("mIş"),     /* impersonal perfective */
 	"PTCP.PERS.PFV":       suffix("DIK"),     /* personal perfective */
 
-	/* Converbs	verb to adverb suffixes */
-	"CVB.1": suffix("(y)A"),
+	/* Converbs  --  verb to adverb suffixes */
 	/* converb occurs simultaneously with verb */
-	"CVB.2": suffix("(y)ArAK"),
+	"CVB.1": suffix("(y)A"),
 	/* converb while or before main verb (konuşarak bekledik, düşünerek buldum),'olarak' means 'as' */
-	"CVB.3": suffix("mAdAn"),
+	"CVB.2": suffix("(y)ArAK"),
 	/* NOT a GER+ABL (maybe comes from it), action not occurring or action following main verb */
-	"CVB.4": suffix("(y)ken"),
+	"CVB.3": suffix("mAdAn"),
 	/* simultaneous, only comes after tenses: not yapken, yaparken/yapacakken/yapmışken etc. */
+	"CVB.4": suffix("(y)ken"),
 	"CVB.5": suffix("(y)Ip"), /* converb completed before verb */
+
+
+	/* Verbs used as suffixes -- typically by combining with Converb -(y)A- */
+	"ABIL":	suffix("(y)Abil"),	/* ability, opposite of INAB */
+	"CONT.1": suffix("(y)Akal"),	/* continuous aspect */
+	"REP":	suffix("(y)Agel"),	/* repetitive aspect */
+	"SWFT":	suffix("(y)Iver"),	/* "swiftness" aspect */
+	"CONT.2": suffix("(y)Adur"),	/* continuous aspect */
+	"CLOSE": suffix("(y)Ayaz"),	/* "close escape" */
+
 
 	/* The ki suffix -- acts as relative pronoun to create relative clause? */
 	"REL": suffix("ki"), /* personal perfective */
