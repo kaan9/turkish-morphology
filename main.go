@@ -4,6 +4,10 @@ import (
 	"bufio"
 	"fmt"
 	inf "github.com/kaan9/turkish-morphology/inflection"
+	"io"
+	"log"
+	"regexp"
+	"strings"
 	"os"
 )
 
@@ -161,6 +165,46 @@ var suffixes = map[string]inf.Suffix{
 
 	/* N/ADJ from V */
 }
+
+func parseSuffixes(r *io.Reader) map[string]inf.Suffix {
+	s := bufio.NewScanner(r)
+	sufs := make(map[string]inf.Suffix)
+
+	re_comment := regexp.MustCompile(`^([^#]*)#\.*$`)
+	re_pair := regexp.MustCompile(`^\s*(\S+)\s*(\S+)\s*$`)
+	re_key  := regexp.MustCompile(`^`)
+
+	for s.Scan() {
+		t := s.Text()
+		if matches := re_comment.MatchString(t); len(matches) == 2 {
+			t = matches[1]
+		}
+		t = strings.TrimSpace(t)
+		if matches := re_pair.FindStringSubmatch(s.Text()); len(matches) == 3 {
+			if matched, _ := regexp.MatchString(`^[a-zA-Z0-9\.]+$`, matches[1]); !matched {
+				log.Printf("error parsing input line: %s\n", s.Text())
+				return nil
+			}
+			suf, ok := inf.ParseSuffix(matches[2])
+			if !ok {
+				log.Printf("error parsing input line: %s\n", s.Text())
+				return nil
+			}
+			sufs[matches[1]] = suf
+		} else if t != "" {
+			log.Printf("error parsing input line: %s\n", s.Text())
+			return nil
+		}
+
+	}
+
+	if err := s.Err(); err != nil {
+		log.Printf(err)
+	}
+
+	return sufs
+}
+
 
 func suffix(s string) inf.Suffix {
 	suf, ok := inf.ParseSuffix(s)

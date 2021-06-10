@@ -1,7 +1,7 @@
 # list of suffixes: each suffix is a pair that is its name (a string that describes its function) and the
 # phonological structure of the suffix as parsed by inflection.Suffix(string)
 # suffixes collected from https://www.dnathan.com/language/turkish/tsd/index.htm and other sources
-# each non-comment of empty line of this file must match the regex   ^(\S+)\s+(\S*)\s*$
+# each non-comment line of this file must match the regex   ^\s*(\S+)\s*(\S*)\s*
 # where the first captured string conforms to [a-zA-Z0-9\.]+ and the second is parseable by inflection.Suffix
 # the second captured string may be empty
 
@@ -21,7 +21,7 @@ KIN                 gil                   # no consonant/vowel harmony
 KIN.PL              lAr                   # not the same as PL
 
 # case (all except def. accusative can be come before predicative personalsuffixes?)
-ABSL                # Absolute (yalın) case
+ABSL                                      # Absolute (yalın) case
 ACC                 (y)I                  # Definite accusative
 DAT                 (y)A                  # dative-directional/lative
 GEN                 (n)In
