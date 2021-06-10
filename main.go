@@ -26,13 +26,13 @@ var suffixes = map[string]inf.Suffix{
 	"POS.3sg": suffix("(s)I(n)"),
 	"POS.3pl": suffix("lArI(n)"),
 
-	/* the familial -gil and -ler suffix: e.g. teyzemler, karıncayiyengiller */
-	"FAML":    suffix("gil"), /* no consonant/vowel harmony */
-	"FAML.PL": suffix("lAr"), /* not the same as PL */
+	/* the familial (kinship) -gil and -ler suffix: e.g. teyzemler, karıncayiyengiller */
+	"KIN":    suffix("gil"), /* no consonant/vowel harmony */
+	"KIN.PL": suffix("lAr"), /* not the same as PL */
 
 	/* case (all except def. accusative can be come before predicative personal suffixes?) */
 	"ABSL":    suffix(""),     /* Absolute (yalın) case */
-	"ACC": suffix("(y)I"), /* Definite accusative */
+	"ACC":     suffix("(y)I"), /* Definite accusative */
 	"DAT":     suffix("(y)A"), /* dative-directional/lative */
 	"GEN":     suffix("(n)In"),
 	"LOC":     suffix("DA"),
@@ -68,21 +68,20 @@ var suffixes = map[string]inf.Suffix{
 	"IMP.3sg":  suffix("sIn"),
 	"IMP.3pl":  suffix("sInlAr"),
 
-	/* tense/aspect */
-	"PPFV":      suffix("DI"),   /* past perfective */
-	"PPFV.INFR": suffix("mIş"),  /* inferred past perfective */
-	"AOR.A":     suffix("(A)r"), /* aorist low vowel */
-	"AOR.I":     suffix("(I)r"), /* aorist high vowel */
-	"AOR.NEG":   suffix("z"),    /* aorist negative/impotential */
+	/* tense/aspect/mood */
+	"TAM.PPFV.KNWN": suffix("DI"),   /* past perfective */
+	"TAM.PPFV.INFR": suffix("mIş"),  /* inferred past perfective */
+	"TAM.AOR.A":     suffix("(A)r"), /* aorist low vowel */
+	"TAM.AOR.I":     suffix("(I)r"), /* aorist high vowel */
+	"TAM.AOR.NEG":   suffix("z"),    /* aorist negative/impotential */
 	/* AOR.NEG always comes after -mA or -(y)AmA (NEG/INAB); is irregular with 1sg, 1pl:
 	yapmam, yapamam, yapmayız, yapamayız (rather than yapmazım, yapamazım, yapmazız, yapamazız),
 	but the forms are correct with the interrogative: yapamaz mıyım, yapamaz mıyız, etc. */
-	"PRS.IPFV": suffix("Iyor"),    /* present imperfective */
-	"PRS.PROG": suffix("mAktA"),   /* pres. progressive: -mAK + -DA */
-	"FUT":      suffix("(y)AcAK"), /* future */
-	/* mood */
-	"COND": suffix("sA"),   /* conditional */
-	"NEC":  suffix("mAlI"), /* necessitative: -mA + -lI */
+	"TAM.PRS.IPFV": suffix("Iyor"),    /* present imperfective */
+	"TAM.PRS.PROG": suffix("mAktA"),   /* pres. progressive: -mAK + -DA */
+	"TAM.FUT":      suffix("(y)AcAK"), /* future */
+	"TAM.COND": suffix("sA"),   /* conditional mood */
+	"TAM.NEC":  suffix("mAlI"), /* necessitative mood: -mA + -lI */
 
 	/* copula (comes after the same suffixes as the predicative personal suffixes (type I)) */
 	"COP": suffix("DIr"), /* alethic modality */
@@ -119,13 +118,12 @@ var suffixes = map[string]inf.Suffix{
 	/* Participles (separated as personal (always takes suffix of possession) versus impersonal) */
 	"PTCP.IMPRS.AOR.A":    suffix("(A)r"),    /* aorist low vowel */
 	"PTCP.IMPRS.AOR.I":    suffix("(I)r"),    /* aorist high vowel */
-	"PTCP.IMPRS.AOR.NEG":  suffix("mAz"),     /* aorist negative */
-	"PTCP.IMPRS.AOR.INAB": suffix("(y)AmAz"), /* aorist impotential */
+	"PTCP.IMPRS.AOR.NEG":  suffix("z"),     /* aorist negative/impotential (used with -mA/-(y)AmA) */
 	"PTCP.IMPRS.IPFV":     suffix("(y)An"),   /* imperfective */
 	"PTCP.IMPRS.FUT":      suffix("(y)AcAK"), /* impersonal future */
 	"PTCP.PERS.FUT":       suffix("(y)AcAK"), /* personal future */
-	"PTCP.IMPRS.PFV":      suffix("mIş"),     /* impersonal perfective */
-	"PTCP.PERS.PFV":       suffix("DIK"),     /* personal perfective */
+	"PTCP.IMPRS.PPFV":      suffix("mIş"),     /* impersonal inferred past perfective */
+	"PTCP.PERS.PPFV":       suffix("DIK"),     /* personal (known) past perfective */
 
 	/* Converbs  --  verb to adverb suffixes */
 	/* converb occurs simultaneously with verb */
@@ -140,12 +138,12 @@ var suffixes = map[string]inf.Suffix{
 
 
 	/* Verbs used as suffixes -- typically by combining with Converb -(y)A- */
-	"ABIL":	suffix("(y)Abil"),	/* ability, opposite of INAB */
-	"CONT.1": suffix("(y)Akal"),	/* continuous aspect */
-	"REP":	suffix("(y)Agel"),	/* repetitive aspect */
-	"SWFT":	suffix("(y)Iver"),	/* "swiftness" aspect */
-	"CONT.2": suffix("(y)Adur"),	/* continuous aspect */
-	"CLOSE": suffix("(y)Ayaz"),	/* "close escape" */
+	"VSX.ABIL":	suffix("(y)Abil"),	/* ability, opposite of INAB */
+	"VSX.REPT":	suffix("(y)Agel"),	/* repetitive aspect */
+	"VSX.SWFT":	suffix("(y)Iver"),	/* "swiftness" aspect */
+	"VSX.CONT":	suffix("(y)Adur"),	/* continuous aspect */
+	"VSX.NEXP":	suffix("(y)Akal"),	/* continuous aspect, unexpected (e.g. bakakalmak) */
+	"VSX.NEAR":	suffix("(y)Ayaz"),	/* "almost happened" */
 
 
 	/* The ki suffix -- acts as relative pronoun to create relative clause? */
@@ -162,7 +160,6 @@ var suffixes = map[string]inf.Suffix{
 	"N.N.LIK": suffix("lIK"), /* abstraction/object involved with noun */
 
 	/* N/ADJ from V */
-	"N.V.CI": suffix("CI"), /* person involved with noun */
 }
 
 func suffix(s string) inf.Suffix {
