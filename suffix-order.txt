@@ -1,0 +1,56 @@
+# This file lists inflectional suffixes (and word roots) and which suffixes (or final forms) they may lead to.
+# if only the first part of a suffix's name is used, all subtypes are included. E.g. OPT = OPT.1sg, OPT.1pl, ...
+# this file is designed to be parsed at runtime
+
+VERB.ROOT # start node -- verb with no suffixes
+	OPT # personal suffix modes (optative, imperative)
+	IMP
+	TAM # all tense/aspect/mood
+	INF # verbal nouns
+	GER
+	WAY
+	REFL # grammatical voice, the attachments of these depends on valency
+	RECP
+	PASS
+	CAUS # version chosen based on root's sound structure
+	NEG # negative and impotential
+	INAB
+	PTCP # all participles (except for one of the positive aorists, determined arbitrarily)
+	CVB.1 # converbs (except (y)ken, which only comes after tenses)
+	CVB.2
+	CVB.3
+	CVB.5
+	VSX
+	# include N/ADJ from V
+
+
+NEG  # -mA
+INAB # -(y)AmA
+	OPT
+	IMP
+	TAM.PPFV # tenses (except plain aorist, which is always positive; separate suffix for negative)
+	TAM.PRS
+	TAM.FUT
+	TAM.COND
+	TAM.NEC
+	TAM.AOR.NEG
+	INF # verbal nouns
+	GER
+	WAY
+	INAB # yapmayamadım? yapamayamadım?  is double negative ungrammatical: yapmamadım?
+	PTCP.PERSi # participles (except positive aorist)
+	PTCP.IMPRS.AOR.NEG
+	PTCP.IMPRS.IPFV
+	PTCP.IMPRS.FUT
+	PTCP.IMPRS.PPFV
+	CVB.1
+	CVB.2
+	CVB.3
+	CVB.5
+	VSX # verbs used as suffixes (-(y)Abil, -(y)Iver, etc.)
+	# maybe N.V (N/ADJ from Verb) suffixes should be included?
+
+
+	
+	
+	
