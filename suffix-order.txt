@@ -1,6 +1,6 @@
 # This file lists inflectional suffixes (and word roots) and which suffixes (or final forms) they may lead to.
 # if only the first part of a suffix's name is used, all subtypes are included. E.g. OPT = OPT.1sg, OPT.1pl, ...
-# this file is designed to be parsed at runtime
+# this file is designed be used with suffixes.txt and to be parsed at runtime 
 
 VERB.ROOT # start node -- verb with no suffixes
 	OPT # personal suffix modes (optative, imperative)
@@ -51,6 +51,4 @@ INAB # -(y)AmA
 	# maybe N.V (N/ADJ from Verb) suffixes should be included?
 
 
-	
-	
 	

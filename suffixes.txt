@@ -1,0 +1,151 @@
+# list of suffixes: each suffix is a pair that is its name (a string that describes its function) and the
+# phonological structure of the suffix as parsed by inflection.Suffix(string)
+# suffixes collected from https://www.dnathan.com/language/turkish/tsd/index.htm and other sources
+# each non-comment of empty line of this file must match the regex   ^(\S+)\s+(\S*)\s*$
+# where the first captured string conforms to [a-zA-Z0-9\.]+ and the second is parseable by inflection.Suffix
+# the second captured string may be empty
+
+# plural
+PL                  lAr
+
+# possessive (iyelik)
+POS.1sg             (I)m
+POS.1pl             (I)mIz
+POS.2sg             (I)n
+POS.2pl             (I)nIz
+POS.3sg             (s)I(n)
+POS.3pl             lArI(n)
+
+# the familial (kinship) -gil and -ler suffix: e.g. teyzemler, karıncayiyengiller
+KIN                 gil                   # no consonant/vowel harmony
+KIN.PL              lAr                   # not the same as PL
+
+# case (all except def. accusative can be come before predicative personalsuffixes?)
+ABSL                # Absolute (yalın) case
+ACC                 (y)I                  # Definite accusative
+DAT                 (y)A                  # dative-directional/lative
+GEN                 (n)In
+LOC                 DA
+ABL                 DAn
+INS                 (y)lA                 # also postposition 'ile'
+
+# Personal Suffixes (kişi ekleri)
+# Predicative Personal Suffix - type I (Copular and after -mIş -AcAK -(A/I)r -Iyor ... otherforms)
+PRED.1sg            (y)Im
+PRED.1pl            (y)Iz
+PRED.2sg            sIn
+PRED.2pl            sInIz
+PRED.3sg
+PRED.3pl            lAr
+# Verbal Personal Suffix -- type II (after -DI and -sA)
+VB.1sg              m
+VB.1pl              k
+VB.2sg              n
+VB.2pl              nIz
+VB.3sg
+VB.3pl              lAr
+# Optative Personal Suffix -- type III (optative mood)
+OPT.1sg             (y)AyIm
+OPT.1pl             (y)AlIm
+OPT.2sg             (y)AsIn
+OPT.2pl             (y)AsInIz
+OPT.3sg             (y)A
+OPT.3pl             (y)AlAr
+# Imperative Personal Suffix -- type IV (imperative mood)
+IMP.2sg
+IMP.2pl             (y)In
+IMP.2pl2            (y)InIz               # more formal
+IMP.3sg             sIn
+IMP.3pl             sInlAr
+
+# tense/aspect/mood
+TAM.PPFV.KNWN       DI                    # past perfective
+TAM.PPFV.INFR       mIş                   # inferred past perfective
+TAM.AOR.A           (A)r                  # aorist low vowel
+TAM.AOR.I           (I)r                  # aorist high vowel
+TAM.AOR.NEG         z                     # aorist negative/impotential
+TAM.PRS.IPFV        Iyor                  # present imperfective
+TAM.PRS.PROG        mAktA                 # pres. progressive: -mAK + -DA
+TAM.FUT             (y)AcAK               # future
+TAM.COND            sA                    # conditional mood
+TAM.NEC             mAlI                  # necessitative mood: -mA + -lI
+# AOR.NEG always comes after -mA or -(y)AmA (NEG/INAB); is irregular with 1sg, 1pl:
+# yapmam, yapamam, yapmayız, yapamayız (rather than yapmazım, yapamazım, yapmazız, yapamazız),
+# but the forms are correct with the interrogative: yapamaz mıyım, yapamaz mıyız,etc.
+
+# copula (comes after the same suffixes as the predicative personal suffixes (typeI))
+COP                 DIr                   # alethic modality
+COP.PST             (y)DI                 # alethic past tense
+COP.PST.INFR        (y)mIş                # alethic inferred tense
+COP.COND            (y)sA                 # conditional mood copula
+# negative copula indicated with 'değil' which takes copula suffixes
+
+# verbal noun
+INF                 mAK                   # infinitive
+GER                 mA                    # gerund
+WAY                 (y)Iş                 # 'way/act of doing' verb
+
+# interrogative particle
+INT                 mI                    # written separate by convention
+
+# grammatical voice
+REFL                (I)n                  # reflexive voice (or pass.)
+RECP                (I)ş                  # reciprocal voice
+PASS                (I)l                  # passive voice
+CAUS.1              t                     # causative type I
+CAUS.2              DIr                   # causative type II
+# REFL is used as PASS in some cases (when the verb ends in 'lV' with V avowel),
+# CAUS.1 is used afer -l, -r, or a vowel in stems with multiplesyllables
+# CAUS.2 is used elsewhere but there are many irregular forms which should be anaylzed as their ownroots
+# The resultant meaning is constructive and not always apparent from the suffixes
+# These suffixes can be chained: REFL+PASS, CAUS+CAUS=FAC (factitive), RECP+CAUS=REP (repetitive),
+# CAUS.1+CAUS.2+CAUS.1 (causatives can be chained arbitrarily, alternatingly), REFL+PASS+CAUS, etc.
+
+# verb negation and potential, these precede tense/aspect/mood and must precede aorist negative
+NEG                 mA
+INAB                (y)AmA                # impotential
+
+# Participles (separated as personal (always takes suffix of possession) versus impersonal)
+PTCP.IMPRS.AOR.A    (A)r                  # aorist low vowel
+PTCP.IMPRS.AOR.I    (I)r                  # aorist high vowel
+PTCP.IMPRS.AOR.NEG  z                     # aorist negative/impotential (used with -mA/-(y)AmA)
+PTCP.IMPRS.IPFV     (y)An                 # imperfective
+PTCP.IMPRS.FUT      (y)AcAK               # impersonal future
+PTCP.PERS.FUT       (y)AcAK               # personal future
+PTCP.IMPRS.PPFV     mIş                   # impersonal inferred past perfective
+PTCP.PERS.PPFV      DIK                   # personal (known) past perfective
+
+# Converbs -- verb to adverb suffixes
+# converb occurs simultaneously with verb
+CVB.1               (y)A
+# converb while or before main verb (konuşarak bekledik, düşünerek buldum),'olarak' means 'as'
+CVB.2               (y)ArAK
+# NOT a GER+ABL (maybe comes from it), action not occurring or action following mainverb
+CVB.3               mAdAn
+# simultaneous, only comes after tenses: not yapken, yaparken/yapacakken/yapmışkenetc.
+CVB.4               (y)ken
+CVB.5               (y)Ip                 # converb completed before verb
+
+# Verbs used as suffixes -- typically by combining with Converb -(y)A-
+VSX.ABIL            (y)Abil               # ability, opposite of INAB
+VSX.REPT            (y)Agel               # repetitive aspect
+VSX.SWFT            (y)Iver               # "swiftness" aspect
+VSX.CONT            (y)Adur               # continuous aspect
+VSX.NEXP            (y)Akal               # continuous aspect, unexpected (e.g. bakakalmak)
+VSX.NEAR            (y)Ayaz               # "almost happened"
+
+# The ki suffix -- acts as relative pronoun to create relative clauses?
+REL                 ki                    # personal perfective
+
+# head marker -- attached to modified noun when a noun modifies another noun (same asPOS.3sg)
+HD                  (s)I(n)
+
+# V from N/ADJ
+V.N.LA              lA                    # kuru -> kurula (dry -> to (make) dry)
+
+# N/ADJ from N/ADJ
+N.N.CI              CI                    # person involved with noun
+N.N.LIK             lIK                   # abstraction/object involved with noun
+:w
+
+# N/ADJ from V
