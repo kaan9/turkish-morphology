@@ -104,13 +104,12 @@ INFR = "(y)mIş"                # inferred tense
 
 
 [VC]      # grammatical voice
-REFL   = "(I)n"          # reflexive voice (or pass.)
-RECP   = "(I)ş"          # reciprocal voice
-PASS   = "(I)l"          # passive voice
-CAUS1  = "t"             # causative voice: used afer -l, -r, or a vowel in stems with multiplesyllables
-CAUS2  = "DIr"           # causative voice: used elsewhere 
-# REFL is used as PASS in some cases (when the verb ends in 'lV' with V a vowel),
-# There are many irregular causative forms which should be anaylzed as their own roots
+REFL   = "(I)n"      # reflexive voice (sometimes pass. if verb ends in 'lx' with x a vowel)
+RECP   = "(I)ş"      # reciprocal voice
+PASS   = "(I)l"      # passive voice
+[VC.CAUS]     # caustive voice
+1  = "t"             # used afer -l, -r, or a vowel in stems with multiplesyllables
+2  = "DIr"           # used elsewhere, with many irregular forms that should be anaylzed as their own roots
 # The resultant meaning is constructive and not always apparent from the suffixes
 # These suffixes can be chained: REFL+PASS, CAUS+CAUS=FAC (factitive), RECP+CAUS=REP (repetitive),
 # CAUS.1+CAUS.2+CAUS.1 (causatives can be chained arbitrarily, alternatingly), REFL+PASS+CAUS, etc.
@@ -163,4 +162,5 @@ LA = "lA"          # kuru -> kurula (dry -> to (make) dry)
 CI  = "CI"                    # person involved with noun
 LIK = "lIK"                   # abstraction/object involved with noun
 
-# N/ADJ from V
+[N.V] # N/ADJ from V
+

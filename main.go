@@ -5,6 +5,7 @@ import (
 	"fmt"
 	inf "github.com/kaan9/turkish-morphology/inflection"
 	"io"
+	"github.com/BurntSushi/toml"
 	"log"
 	"regexp"
 	"strings"
