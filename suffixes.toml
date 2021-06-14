@@ -21,146 +21,147 @@ GER = "mA"            # gerund
 WAY = "(y)Iş"         # 'way/act of doing' verb
 
 [POS] # possessive (iyelik)
-1sg = "(I)m"
-1pl = "(I)mIz"
-2sg = "(I)n"
-2pl = "(I)nIz"
-3sg = "(s)I(n)"
-3pl = "lArI(n)"
+  1sg = "(I)m"
+  1pl = "(I)mIz"
+  2sg = "(I)n"
+  2pl = "(I)nIz"
+  3sg = "(s)I(n)"
+  3pl = "lArI(n)"
 
 [KIN] # the familial (kinship) -gil and -ler suffix: e.g. teyzemler, karıncayiyengiller
-FAML = "gil"           # no consonant/vowel harmony
-PL   = "lAr"           # not the same as PL
+  FAML = "gil"           # no consonant/vowel harmony
+  PL   = "lAr"           # not the same as PL
 
 [CASE] # case (all except def. accusative can come before predicative personal suffixes?)
-ABSL = ""              # Absolute (yalın) case
-ACC  = "(y)I"          # Definite accusative
-DAT  = "(y)A"          # dative-directional/lative
-GEN  = "(n)In"
-LOC  = "DA"
-ABL  = "DAn"
-INS  = "(y)lA"         # also postposition 'ile'
+  ABSL = ""              # Absolute (yalın) case
+  ACC  = "(y)I"          # Definite accusative
+  DAT  = "(y)A"          # dative-directional/lative
+  GEN  = "(n)In"
+  LOC  = "DA"
+  ABL  = "DAn"
+  INS  = "(y)lA"         # also postposition 'ile'
 
 
 # Personal Suffixes (kişi ekleri)
 [PRED]  # Predicative Personal Suffix - type I (Copular and after -mIş -AcAK -(A/I)r -Iyor ... otherforms)
-1sg = "(y)Im"
-1pl = "(y)Iz"
-2sg = "sIn"
-2pl = "sInIz"
-3sg = ""
-3pl = "lAr"
+  1sg = "(y)Im"
+  1pl = "(y)Iz"
+  2sg = "sIn"
+  2pl = "sInIz"
+  3sg = ""
+  3pl = "lAr"
 [VB]    # Verbal Personal Suffix -- type II (after -DI and -sA)
-1sg = "m"
-1pl = "k"
-2sg = "n"
-2pl = "nIz"
-3sg = ""
-3pl = "lAr"
+  1sg = "m"
+  1pl = "k"
+  2sg = "n"
+  2pl = "nIz"
+  3sg = ""
+  3pl = "lAr"
 [OPT]   # Optative Personal Suffix -- type III (optative mood)
-1sg = "(y)AyIm"
-1pl = "(y)AlIm"
-2sg = "(y)AsIn"
-2pl = "(y)AsInIz"
-3sg = "(y)A"
-3pl = "(y)AlAr"
+  1sg = "(y)AyIm"
+  1pl = "(y)AlIm"
+  2sg = "(y)AsIn"
+  2pl = "(y)AsInIz"
+  3sg = "(y)A"
+  3pl = "(y)AlAr"
 [IMP]   # Imperative Personal Suffix -- type IV (imperative mood)
-2sg  = ""
-2pl  = "(y)In"
-2pl2 = "(y)InIz"               # more formal
-3sg  = "sIn"
-3pl  = "sInlAr"
+  2sg  = ""
+  2pl  = "(y)In"
+  2pl2 = "(y)InIz"               # more formal
+  3sg  = "sIn"
+  3pl  = "sInlAr"
 
 
 [TAM]               # tense/aspect/mood
-FUT       = "(y)AcAK"   # future
-COND      = "sA"        # conditional mood
-NEC       = "mAlI"      # necessitative mood: -mA + -lI
+  FUT       = "(y)AcAK"   # future
+  COND      = "sA"        # conditional mood
+  NEC       = "mAlI"      # necessitative mood: -mA + -lI
 
-[TAM.PPFV]              # past perfective
-KNWN = "DI"                 # known
-INFR = "mIş"                # inferred
-
-[TAM.AOR]               # aorist
-A     = "(A)r"              # low vowel
-I     = "(I)r"              # high vowel
-NEG   = "z"                 # negative/impotential (always comes after NEG)
-[TAM.PRS]           # present tense
-IPFV  = "Iyor"      # imperfective
-ROG  = "mAktA"      # progressive: -mAK + -DA
+  [TAM.PPFV]              # past perfective
+    KNWN = "DI"                 # known
+    INFR = "mIş"                # inferred
+  [TAM.AOR]               # aorist
+    A     = "(A)r"              # low vowel
+    I     = "(I)r"              # high vowel
+    NEG   = "z"                 # negative/impotential (always comes after NEG)
+  [TAM.PRS]               # present tense
+    IPFV  = "Iyor"          # imperfective
+    ROG  = "mAktA"          # progressive: -mAK + -DA
 # AOR.NEG always comes after -mA or -(y)AmA (NEG/INAB); is irregular with 1sg, 1pl:
 # yapmam, yapamam, yapmayız, yapamayız (rather than yapmazım, yapamazım, yapmazız, yapamazız),
 # but the forms are correct with the interrogative: yapamaz mıyım, yapamaz mıyız,etc.
 
 
 [COP]  # copula (comes after the same suffixes as the predicative personal suffixes (typeI))
-EXST     = "DIr"               # plain copula indicating 'to be'
-COND     = "(y)sA"             # conditional mood copula
-[COP.PAST]
-KNWN = "(y)DI"                 # known past tense
-INFR = "(y)mIş"                # inferred tense
+  EXST     = "DIr"               # plain copula indicating 'to be'
+  COND     = "(y)sA"             # conditional mood copula
+  [COP.PAST]                     # past tnse copula
+    KNWN = "(y)DI"                 # known
+    INFR = "(y)mIş"                # inferred
 # negative copula indicated with 'değil' which takes copula suffixes
 
 
 
 [VC]      # grammatical voice
-REFL   = "(I)n"      # reflexive voice (sometimes pass. if verb ends in 'lx' with x a vowel)
-RECP   = "(I)ş"      # reciprocal voice
-PASS   = "(I)l"      # passive voice
-[VC.CAUS]     # caustive voice
-1  = "t"             # used afer -l, -r, or a vowel in stems with multiplesyllables
-2  = "DIr"           # used elsewhere, with many irregular forms that should be anaylzed as their own roots
+  REFL   = "(I)n"      # reflexive voice (sometimes pass. if verb ends in 'lx' with x a vowel)
+  RECP   = "(I)ş"      # reciprocal voice
+  PASS   = "(I)l"      # passive voice
+  [VC.CAUS]     # caustive voice
+    1  = "t"             # used afer -l, -r, or a vowel in stems with multiplesyllables
+    2  = "DIr"           # used elsewhere, with many irregular forms that should be anaylzed as their own roots
 # The resultant meaning is constructive and not always apparent from the suffixes
 # These suffixes can be chained: REFL+PASS, CAUS+CAUS=FAC (factitive), RECP+CAUS=REP (repetitive),
 # CAUS.1+CAUS.2+CAUS.1 (causatives can be chained arbitrarily, alternatingly), REFL+PASS+CAUS, etc.
 
 
 [NEG]  # verb negation and impotential, these precede tense/aspect/mood and must precede aorist negative
-NEG  = "mA"
-INAB = "(y)AmA"                # impotential
+  NEG  = "mA"
+  INAB = "(y)AmA"                # impotential
 
 
 [PTCP]       # Participles
 
-[PTCP.IMPRS]     # Impersonal -- never takes suffix of possession
-IPFV    = "(y)An"                 # imperfective
-FUT     = "(y)AcAK"               # future
-PPFV    = "mIş"                   #  inferred past perfective
-[PTCP.IMPRS.AOR] # aorist tense
-A       = "(A)r"                  # low vowel
-I       = "(I)r"                  # high vowel
-NEG     = "z"                     # negative/impotential (used with -mA/-(y)AmA)
+  [PTCP.IMPRS]     # Impersonal -- never takes suffix of possession
+    IPFV    = "(y)An"                 # imperfective
+    FUT     = "(y)AcAK"               # future
+    PPFV    = "mIş"                   #  inferred past perfective
+  [PTCP.IMPRS.AOR] # aorist tense
+    A       = "(A)r"                  # low vowel
+    I       = "(I)r"                  # high vowel
+    NEG     = "z"                     # negative/impotential (used with -mA/-(y)AmA)
 
-[PTCP.PERS] # Personal -- always takes suffix of possession
-FUT      = "(y)AcAK"               # personal future
-PPFV     = "DIK"                   # personal (known) past perfective
+  [PTCP.PERS] # Personal -- always takes suffix of possession
+    FUT      = "(y)AcAK"               # personal future
+    PPFV     = "DIK"                   # personal (known) past perfective
 
 
 [CVB] # Converbs -- verb to adverb suffixes
-1 = "(y)A"    # converb occurs simultaneously with verb
-2 = "(y)ArAK" # converb while or before main verb (konuşarak bekledik, düşünerek buldum),'olarak' means 'as'
-3 = "mAdAn"   # NOT a GER+ABL (maybe comes from it), action not occurring or action following mainverb
-4 = "(y)ken"  # simultaneous, only comes after tenses: not yapken, yaparken/yapacakken/yapmışken, etc.
-5 = "(y)Ip"   # converb completed before verb
+  [CVB.V] # suffixes attached to verbs
+  1 = "(y)A"    # converb occurs simultaneously with verb
+  2 = "(y)ArAK" # converb while or before main verb (konuşarak bekledik, düşünerek buldum),'olarak' means 'as'
+  3 = "mAdAn"   # NOT a GER+ABL (maybe comes from it), action not occurring or action following mainverb
+  4 = "(y)Ip"   # converb completed before verb
+  [CVB.T] # suffixes attached after the tense
+  1 = "(y)ken"  # simultaneous, only comes after tenses: not yapken, yaparken/yapacakken/yapmışken, etc.
 
 [VSX] # Verbs used as suffixes -- typically by combining with Converb -(y)A-
-ABIL = "(y)Abil"       # ability, opposite of INAB
-REPT = "(y)Agel"       # repetitive aspect
-SWFT = "(y)Iver"       # "swiftness" aspect
-CONT = "(y)Adur"       # continuous aspect
-NEXP = "(y)Akal"       # continuous aspect, unexpected (e.g. bakakalmak)
-NEAR = "(y)Ayaz"       # "almost happened"
+  ABIL = "(y)Abil"       # ability, opposite of INAB
+  REPT = "(y)Agel"       # repetitive aspect
+  SWFT = "(y)Iver"       # "swiftness" aspect
+  CONT = "(y)Adur"       # continuous aspect
+  NEXP = "(y)Akal"       # continuous aspect, unexpected (e.g. bakakalmak)
+  NEAR = "(y)Ayaz"       # "almost happened"
 
 
 [V] # suffixes producing a verb
 
-[V.N] # suffixes producing a verb from a Noun/ADJ
-LA = "lA"          # kuru -> kurula (dry -> to (make) dry)
+  [V.N] # suffixes producing a verb from a Noun/ADJ
+    LA = "lA"          # kuru -> kurula (dry -> to (make) dry)
 
 [N]   # suffixes producing a N/ADJ
-[N.N] # N/ADJ from N/ADJ
-CI  = "CI"                    # person involved with noun
-LIK = "lIK"                   # abstraction/object involved with noun
+  [N.N] # N/ADJ from N/ADJ
+    CI  = "CI"                    # person involved with noun
+    LIK = "lIK"                   # abstraction/object involved with noun
 
-[N.V] # N/ADJ from V
+  [N.V] # N/ADJ from V
 
